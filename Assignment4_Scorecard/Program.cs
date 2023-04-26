@@ -1,177 +1,229 @@
 ﻿namespace Assignment4_Scorecard
-{
-    class Student
+{   class Student
     {
-        public int RollNo { get; set; }
         public string Name { get; set; }
-        public int Math { get; set; }
+        public int RollNo { get; set; }
+        public int Maths { get; set; }
         public int Science { get; set; }
         public int English { get; set; }
         public int Language { get; set; }
-        public int SST { get; set; }
-        public int Totalscore { get; set; }
-        public double Averagescore { get; set; }
-        public bool Iscleared;
-        public char Grade;
+        public int SocialStudies { get; set; }
+        public int TotalMarks { get; set; }
+
+        public bool IsPassed()
+        {
+            return (Maths >= 35 && Science >= 35 && English >= 35 && Language >= 35 && SocialStudies >= 35);
+        }
+
     }
 
     class ScoreCard
     {
-        int n = 0;
         Student[] students;
-        public void AcceptDetails()
+        public void EnterDetails()
         {
-            Console.WriteLine("Enter the number of students");
-            n = Convert.ToInt16(Console.ReadLine());
-            students = new Student[n];
-            for (int i = 0; i < n; i++)
+            Console.Write("Enter the number of students: ");
+            int num = Convert.ToInt16(Console.ReadLine());
+
+            students = new Student[num];
+
+            for (int i = 0; i < num; i++)
             {
                 Console.WriteLine($"Enter Details for Student {i + 1}");
-                Console.WriteLine("Enter Roll No");
-                int rollno = Convert.ToInt16(Console.ReadLine());
                 Console.WriteLine("Enter Student Name");
                 string name = Console.ReadLine();
-                Console.WriteLine("Enter Marks for Maths");
+                Console.WriteLine("Enter Roll No");
+                int rollno = Convert.ToInt16(Console.ReadLine());  
+                Console.WriteLine("Enter Marks for below:");
+                Console.WriteLine("Maths");
                 int maths = Convert.ToInt16(Console.ReadLine());
-                Console.WriteLine("Enter Marks for Science");
+                Console.WriteLine("Science");
                 int science = Convert.ToInt16(Console.ReadLine());
-                Console.WriteLine("Enter Marks for English");
+                Console.WriteLine("English");
                 int english = Convert.ToInt16(Console.ReadLine());
-                Console.WriteLine("Enter Marks for Language");
+                Console.WriteLine("Language");
                 int lang = Convert.ToInt16(Console.ReadLine());
-                Console.WriteLine("Enter Marks for SST");
+                Console.WriteLine("SocialStudies");
                 int sst = Convert.ToInt16(Console.ReadLine());
-                int sum = maths + science + english + lang + sst;
-                int average = sum / 5;
-                bool passstatus = false;
-                if (maths >= 35 && science >= 35 && english >= 35 && lang >= 35 && sst >= 35)
-                {
-                    passstatus = true;
-                }
-                students[i] = new Student() { RollNo = rollno, Name = name, Math = maths, Science = science, English = english, Language = lang, SST = sst, Totalscore = sum, Averagescore = average, Iscleared = passstatus };
+                int total = maths + science + english + lang + sst;
+                students[i] = new Student() { RollNo = rollno, Name = name, Maths = maths, Science = science, English = english, Language = lang, SocialStudies = sst, TotalMarks = total };
             }
         }
 
-        public void Topscorer()
+        public void ViewDetails()
         {
-            int topscore = 0;
-            int topscoreindex = 0;
+            int sum = 0;
+            int max = 0;
             for (int i = 0; i < students.Length; i++)
             {
-                if (students[i].Totalscore > topscore)
+                Console.WriteLine($"Roll No: {students[i].RollNo} Name: {students[i].Name}");
+                Console.WriteLine($"Math: {students[i].Maths}, Science: {students[i].Science}, English: {students[i].English}, Language: {students[i].Language}, SST: {students[i].SocialStudies}");
+                Console.WriteLine($"Total Marks: {students[i].TotalMarks}");
+
+            }
+            // Top scorer in the class
+            int maxMarks = 0;
+            string topScorerName = "";
+            int topScorerRollNo = 0;
+
+            foreach (Student student in students)
+            {
+                if (student.TotalMarks > maxMarks)
                 {
-                    topscore = students[i].Totalscore;
-                    topscoreindex = i;
+                    maxMarks = student.TotalMarks;
+                    topScorerName = student.Name;
+                    topScorerRollNo = student.RollNo;
                 }
             }
-            Console.WriteLine($"Top scorer: {students[topscoreindex].Name}, Roll No: {students[topscoreindex].RollNo}");
+            Console.WriteLine($"\nTop Scorer - Name: {topScorerName} ,Roll No.: {topScorerRollNo}, Total Marks: {maxMarks}");
 
-        }
-        public void Passedstudents()
-        {
+            // Average marks in each subject
+            double avgMath = 0, avgScience = 0, avgEnglish = 0, avgLanguage = 0, avgSST = 0;
 
-            int passstudentindex = 0;
+            foreach (Student student in students)
+            {
+                avgMath += student.Maths;
+                avgScience += student.Science;
+                avgEnglish += student.English;
+                avgLanguage += student.Language;
+                avgSST += student.SocialStudies;
+            }
+
+            avgMath = (avgMath/students.Length);
+            avgScience = (avgScience/students.Length);
+            avgEnglish = (avgEnglish/students.Length);
+            avgLanguage = (avgLanguage/students.Length);
+            avgSST = (avgSST/students.Length);
+
+            Console.WriteLine($"\nAverage Marks in each Subject - \nMath    \t:{avgMath:F2}\nScience\t\t:{avgScience:F2}\nEnglish\t\t:{avgEnglish:F2}\nLanguage\t:{avgLanguage:F2}\nSocial Studies\t:{avgSST:F2}");
+
+            // Number of students who have cleared the examination            
+            Console.WriteLine("\nStudents who have cleared the examination:");
+            foreach (Student student in students)
+            {
+                if (student.Maths >= 35 && student.Science >= 35 && student.English >= 35 && student.Language >= 35 && student.SocialStudies >= 35)
+                {
+                    Console.WriteLine($"Name : {student.Name} ,Roll No : {student.RollNo}");
+                }
+            }
+
+            // Display the number of students who failed
+            int failedStudents = 0;
             for (int i = 0; i < students.Length; i++)
             {
-                if (students[i].Iscleared)
+                if (!students[i].IsPassed())
                 {
-
-                    passstudentindex = i;
-                    Console.WriteLine($"{students[passstudentindex].Name} with rollno {students[passstudentindex].RollNo} cleared the exam");
+                    failedStudents++;
                 }
-
             }
-            // Console.WriteLine($"{students[passstudentindex].Name} with rollno {students[passstudentindex].RollNo} cleared the exam");
-        }
-        public void Grade()
-        {
-            char grade;
+
+            Console.WriteLine("\nNumber of students who need to mandatorily repeat the examination: {0}", failedStudents);
+            Console.WriteLine("\nDetails of students who need to mandatorily repeat the examination:");
+            Console.WriteLine("RollNo\tName");
             for (int i = 0; i < students.Length; i++)
             {
-                if (students[i].Averagescore > 95)
+                if (!students[i].IsPassed())
                 {
-                    grade = 'A';
-                    students[i].Grade = grade;
-
+                    Console.WriteLine("{0}\t{1}", students[i].RollNo, students[i].Name);
                 }
-                else if (students[i].Averagescore >= 80 && students[i].Averagescore < 95)
-                {
-                    grade = 'B';
-                    students[i].Grade = grade;
-
-                }
-                else if (students[i].Averagescore >= 70 && students[i].Averagescore < 80)
-                {
-                    grade = 'C';
-                    students[i].Grade = grade;
-                }
-                else if (students[i].Averagescore >= 60 && students[i].Averagescore < 70)
-                {
-                    grade = 'D';
-                    students[i].Grade = grade;
-                }
-                else if (students[i].Averagescore >= 50 && students[i].Averagescore < 60)
-                {
-                    grade = 'E';
-                    students[i].Grade = grade;
-                }
-                else if (students[i].Averagescore < 50)
-                {
-                    grade = 'F';
-                    students[i].Grade = grade;
-                }
-                Console.WriteLine($"{students[i].Name}----grade {students[i].Grade}------average {students[i].Averagescore}");
-
-
             }
-
+            Console.WriteLine();
         }
-        public void repeatexam()
+
+        public void StudentGrade()
         {
-            for (int i = 0; i < students.Length; i++)
+            string Grade = "A";
+            foreach (Student student in students)
             {
-                if (students[i].Iscleared == false)
+                double studentAverage = 0;
+                studentAverage = student.TotalMarks / 5;
+                if (studentAverage >= 95)
                 {
-                    Console.WriteLine($"{students[i].Name},{students[i].RollNo} Has to reappear the exam ");
+                    Grade = "A";
+                }
+                else if (studentAverage >= 80)
+                {
+                    Grade = "B";
+                }
+                else if (studentAverage >= 70)
+                {
+                    Grade = "C";
+                }
+                else if (studentAverage >= 60)
+                {
+                    Grade = "D";
+                }
+                else if (studentAverage >= 50)
+                {
+                    Grade = "E";
+                }
+                else
+                {
+                    Grade = "F";
+                }
+            }
+            Console.WriteLine();
+        }
+
+        public void GradeCard(int roll)
+        {
+            Console.WriteLine("ScoreCard");
+            foreach (Student student in students)
+            {
+                if (roll == student.RollNo)
+                {
+                    Console.WriteLine($"Name of the student: :{student.Name}");
+                    Console.WriteLine($"Roll Number          :{student.RollNo}");
+                    Console.WriteLine($"Math Marks           :{student.Maths}");
+                    Console.WriteLine($"Science Marks        :{student.Science}");
+                    Console.WriteLine($"English Marks        :{student.English}");
+                    Console.WriteLine($"Language Marks       :{student.Language}");
+                    Console.WriteLine($"Social Marks         :{student.SocialStudies}");
+                    Console.WriteLine($"Total Marks Obtained :{student.TotalMarks}");
+                    string Grade = "A";
+                    double studentAverage = 0;
+                    studentAverage = student.TotalMarks / 5;
+                    if (studentAverage >= 95)
+                    {
+                        Grade = "A";
+                    }
+                    else if (studentAverage >= 80)
+                    {
+                        Grade = "B";
+                    }
+                    else if (studentAverage >= 70)
+                    {
+                        Grade = "C";
+                    }
+                    else if (studentAverage >= 60)
+                    {
+                        Grade = "D";
+                    }
+                    else if (studentAverage >= 50)
+                    {
+                        Grade = "E";
+                    }
+                    else
+                    {
+                        Grade = "F";
+                    }
+                    Console.WriteLine($"Grade Achived    \t:{Grade}");
                 }
 
             }
-
         }
-        public void scorecard()
-        {
-            for (int i = 0; i < students.Length; i++)
-            {
-                Console.WriteLine($"                   {students[i].Name}    SCORECARD");
-                Console.WriteLine($"Name:  {students[i].Name}");
-                Console.WriteLine($"Rollno:  {students[i].RollNo}");
-                Console.WriteLine($"Maths Marks:  {students[i].Math}");
-                Console.WriteLine($"Science Marks:  {students[i].Science}");
-                Console.WriteLine($"English Marks:  {students[i].English}");
-                Console.WriteLine($"Language marks:  {students[i].Language}");
-                Console.WriteLine($"Social Studies Marks:  {students[i].SST}");
-                Console.WriteLine($"Totalmarks:  {students[i].Totalscore}");
-                Console.WriteLine($"grade:  {students[i].Grade}");
-            }
-
-        }
-
-
     }
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {
-            ScoreCard card = new ScoreCard();
-            card.AcceptDetails();
-            //card.ShowDetails();
-            card.Topscorer();
-            card.Passedstudents();
-            card.repeatexam();
-            card.Grade();
-
-            card.scorecard();
-
+            ScoreCard t = new ScoreCard();
+            t.EnterDetails();
+            t.ViewDetails();
+            t.StudentGrade();
+            Console.WriteLine("Enter a Roll Number:");
+            int roll = Convert.ToInt16(Console.ReadLine());
+            t.GradeCard(roll);
         }
     }
 }
